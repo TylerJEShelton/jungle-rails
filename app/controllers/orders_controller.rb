@@ -19,6 +19,11 @@ class OrdersController < ApplicationController
     redirect_to cart_path, flash: { error: e.message }
   end
 
+  def display_order
+    @display_order ||= @order.line_items.map {|item| {quantity: item.quantity, product: Product.find(item.product_id)}}
+  end
+  helper_method :display_order
+
   private
 
   def empty_cart!
