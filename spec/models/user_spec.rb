@@ -54,4 +54,32 @@ RSpec.describe User, type: :model do
       expect(@user2.errors.full_messages).to include("Email has already been taken")
     end
   end
+
+  describe '.authenticate_with_credentials' do
+    # examples for this class method here
+    it "validates that a user logs in correctly when correct email and password are provided" do
+      @user = User.create(f_name: "Tyler", l_name: "Shelton", email: "t@t.com", password: "Test1234", password_confirmation: "Test1234")
+      expect(@user.authenticate_with_credentials("t@t.com", "Test1234")).to eq(@user)
+    end
+
+    it "validates that a user does not log in correctly when given a correct email and incorrect password" do
+      @user = User.create(f_name: "Tyler", l_name: "Shelton", email: "t@t.com", password: "Test1234", password_confirmation: "Test1234")
+      expect(@user.authenticate_with_credentials("t@t.com", "TEST1234")).to be_nil
+    end
+
+    it "validates that a user does not log in correctly when given an incorrect email and correct password" do
+      @user = User.create(f_name: "Tyler", l_name: "Shelton", email: "tshelton@t.com", password: "Test1234", password_confirmation: "Test1234")
+      expect(@user.authenticate_with_credentials("t@t.com", "Test1234")).to be_nil
+    end
+
+    it "validates that a user still logs in when leading/trailing whitespace is surrounding a valid email with a correct password" do
+      @user = User.create(f_name: "Tyler", l_name: "Shelton", email: "t@t.com", password: "Test1234", password_confirmation: "Test1234")
+      expect(@user.authenticate_with_credentials("  t@t.com  ", "Test1234")).to eq(@user)
+    end
+
+    it "validates that a user still logs in when a correct email contains different character cases than signed up with as well as the correct password" do
+      @user = User.create(f_name: "Tyler", l_name: "Shelton", email: "t@t.com", password: "Test1234", password_confirmation: "Test1234")
+      expect(@user.authenticate_with_credentials("T@T.com", "Test1234")).to eq(@user)
+    end
+  end
 end

@@ -3,8 +3,10 @@ class SessionsController < ApplicationController
   end
 
   def create
-    @user = User.find_by_email(params[:email])
-    if @user && @user.authenticate_with_credentials(params[:email],params[:password])
+    # use strip and downcase on the input from the form to remove leading and trailing whitespace as well as make everything lowercase as the email is case insensitive
+    email = params[:email].downcase.strip
+    @user = User.find_by_email(email)
+    if @user && @user.authenticate_with_credentials(email,params[:password])
       session[:user_id] = @user.id
       redirect_to '/'
     else
